@@ -1,4 +1,5 @@
 import { Group } from "../models/group.model.js";
+import { Lesson } from "../models/lesson.model.js";
 import { User } from "../models/user.model.js";
 
 const groupController = {
@@ -9,6 +10,18 @@ const groupController = {
       res.json(group);
     } catch (error) {
       res.status(401).json({ error: "Ошибка при показе групп" });
+    }
+  },
+  getGroupsById: async (req, res) => {
+    //показ одной группы
+    try {
+      const group = await Group.findById(req.params.id).populate("users");
+      if (!group) {
+        return res.status(401).json({ error: "Группа не найдена" });
+      }
+      return res.json(group);
+    } catch (error) {
+      return res.status(401).json({ error: "Ошибка при получении группы" });
     }
   },
   postGroup: async (req, res) => {
@@ -65,29 +78,31 @@ const groupController = {
     try {
       const groupId = req.params.id;
       const userId = req.params.userId;
-  
+
       const group = await Group.findById(groupId);
       if (!group) {
         return res.status(401).json({ error: "Группа не найдена" });
       }
-  
+
       const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ error: "Пользователь не найден" });
       }
-  
+
       if (group.users.includes(userId)) {
-        return res.status(401).json({ error: "Такой пользователь уже есть в группе" });
+        return res
+          .status(401)
+          .json({ error: "Такой пользователь уже есть в группе" });
       }
-      
+
       //Добавим айди пользователя в поле users
       group.users.push(userId);
       await group.save();
-  
+
       // Добавим айди группы в поле groups у пользователя
       user.groups.push(groupId);
       await user.save();
-  
+
       return res.json(user);
     } catch (error) {
       return res
@@ -108,7 +123,9 @@ const groupController = {
 
       const user = await User.findById(userId);
       if (!user || !group.users.includes(userId)) {
-        return res.status(404).json({ error: "Пользователь не найден в группе" });
+        return res
+          .status(404)
+          .json({ error: "Пользователь не найден в группе" });
       }
 
       // Удаляем айди группы из массива group.users
@@ -126,18 +143,65 @@ const groupController = {
         .json({ error: "Ошибка при удалении пользователя из группы" });
     }
   },
-  getGroupsById: async (req, res) => {
-    //показ одной группы
+  addLessonInGroup: async (req, res) => {
+    //добавление предмета в группу
     try {
-      const group = await Group.findById(req.params.id).populate("users")
+      const groupId = req.params.id;
+      const { lessonId } = req.params;
+
+      const group = await Group.findById(groupId);
       if (!group) {
         return res.status(401).json({ error: "Группа не найдена" });
       }
-      return res.json(group);
+
+      const lesson = await Lesson.findById(lessonId);
+      if (!lesson) {
+        return res.status(401).json({ error: "Предмет не найден" });
+      }
+
+      if (group.lessons.includes(lessonId)) {
+        return res
+          .status(401)
+          .json({ error: "Такой предмет уже есть в группе" });
+      }
+
+      group.lessons.push(lessonId);
+      await group.save();
+
+      return res.json(lesson);
     } catch (error) {
-      return res.status(401).json({ error: "Ошибка при получении группы" });
+      return res
+        .status(401)
+        .json({ error: "Ошибка при добавлении предмета в группу" });
     }
-  }
+  },
+  deleteLessonFromGroup: async (req, res) => {
+    // Удаление предмета из группы
+    try {
+      const groupId = req.params.id;
+      const {lessonId} = req.params;
+  
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({ error: "Группа не найдена" });
+      }
+  
+      const lesson = await Lesson.findById(lessonId);
+      if (!lesson) {
+        return res.status(401).json({ error: "Предмет не найден" });
+      }
+  
+      // Удаляется айди предмета из массива group.lessons
+      group.lessons = group.lessons.filter((id) => id.toString() !== lessonId);
+      await group.save();
+  
+      return res.json({ message: "Предмет успешно удален из группы" });
+    } catch (error) {
+      return res
+        .status(401)
+        .json({ error: "Ошибка при удалении предмета из группы" });
+    }
+  },
 };
 
 export default groupController;

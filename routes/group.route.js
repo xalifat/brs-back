@@ -10,5 +10,7 @@ router.patch("/group/:id", groupController.patchGroup); //изменение г�
 router.delete("/group/:id", groupController.deleteGroup); //удаление группы
 router.post("/group/:id/add-user/:userId", groupController.addUserInGroup); //добавление пользователя в группу
 router.delete("/group/:id/delete-user/:userId", groupController.deleteUserFromGroup); //удаление пользователя из группы
+router.post("/group/:id/add-lesson/:lessonId", groupController.addLessonInGroup); //добавление предмета в группу
+router.delete("/group/:id/delete-lesson/:lessonId", groupController.deleteLessonFromGroup); //удаление предмета из группы
 
 export default router;
