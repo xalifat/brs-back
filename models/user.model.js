@@ -7,14 +7,12 @@ const userSchema = mongoose.Schema({
   lastName: { type: String, require: true },
   role: { type: String, default: "user" },
   password: { type: String, require: true },
-  groups: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Groups",
-  }],
-  lessons: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Lessons",
-  }]
+  groups: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Groups",
+    },
+  ],
 });
 
 export const User = mongoose.model("User", userSchema);
