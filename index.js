@@ -10,11 +10,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use('/users', usersRouter);
+app.use(usersRouter);
 
 
 mongoose
-  .connect(process.env.MONGO)
+  .connect(process.env.MONGO_URL)
   .then(() => console.log("Успешно соединились с сервером MongoDB"))
   .catch(() => console.log("Ошибка при соединении с сервером MongoDB"));
 
