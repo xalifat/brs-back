@@ -6,7 +6,7 @@ const groupController = {
   getGroup: async (req, res) => {
     //показ всех групп
     try {
-      const group = await Group.find();
+      const group = await Group.find().populate("users").populate("lessons");
       res.json(group);
     } catch (error) {
       res.status(401).json({ error: "Ошибка при показе групп" });
@@ -15,7 +15,9 @@ const groupController = {
   getGroupsById: async (req, res) => {
     //показ одной группы
     try {
-      const group = await Group.findById(req.params.id).populate("users");
+      const group = await Group.findById(req.params.id)
+        .populate("users")
+        .populate("lessons");
       if (!group) {
         return res.status(401).json({ error: "Группа не найдена" });
       }
@@ -179,22 +181,22 @@ const groupController = {
     // Удаление предмета из группы
     try {
       const groupId = req.params.id;
-      const {lessonId} = req.params;
-  
+      const { lessonId } = req.params;
+
       const group = await Group.findById(groupId);
       if (!group) {
         return res.status(404).json({ error: "Группа не найдена" });
       }
-  
+
       const lesson = await Lesson.findById(lessonId);
       if (!lesson) {
         return res.status(401).json({ error: "Предмет не найден" });
       }
-  
+
       // Удаляется айди предмета из массива group.lessons
       group.lessons = group.lessons.filter((id) => id.toString() !== lessonId);
       await group.save();
-  
+
       return res.json({ message: "Предмет успешно удален из группы" });
     } catch (error) {
       return res
