@@ -12,9 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(usersRouter);
-app.use(groupRouter)
-
-
+app.use(groupRouter);
 
 mongoose
   .connect(process.env.MONGO_URL)
