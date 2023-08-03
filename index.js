@@ -4,6 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
+
+import lessonsRouter from './routes/lessons.route.js'
 import usersRouter from './routes/users.route.js';
 import groupRouter from './routes/group.route.js';
 
@@ -12,6 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(usersRouter);
+app.use(lessonsRouter);
 app.use(groupRouter);
 
 mongoose
