@@ -54,6 +54,37 @@ const usersController = {
       res.status(401).json({ error: "Ошибка при показе пользователей" });
     }
   },
+
+  deleteUser: async (req, res) => {
+    try {
+      const userId = req.params.id;
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "Пользователь не найден" });
+      }
+      await User.findByIdAndRemove(userId);
+
+      return res.json({ message: "Пользователь успешно удален" });
+    } catch (error) {
+      res.status(401).json({ error: "Ошибка при удалении пользователей" });
+    }
+  },
+
+  updateUser: async (req, res) => {
+    try {
+      const updatedUser = req.params.id;
+      const user = await User.findById(updatedUser);
+      if (!user) {
+        return res.status(404).json({ error: "Пользователь не найден" });
+      }
+      await User.findByIdAndUpdate(updatedUser, req.body);
+      const updatedUserData = await User.findById(updatedUser);
+      return res.json(updatedUserData);
+    } catch (error) {
+      res.status(500).json({ error: "Ошибка при обновлении пользователя" });
+    }
+  },
 };
 
 export default usersController;
